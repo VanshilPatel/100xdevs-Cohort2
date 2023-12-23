@@ -10,7 +10,15 @@ let requestCount = 0;
 // maintain a count of the number of requests made to the server in the global
 // requestCount variable
 
-app.get('/user', function(req, res) {
+
+app.use((req, res, next)=>{
+    requestCount++;
+    console.log(`Request Count: ${requestCount}`);
+    next();
+  })
+
+
+app.get('/user',function(req, res) {
   res.status(200).json({ name: 'john' });
 });
 
