@@ -9,16 +9,19 @@ const AdminSchema = new mongoose.Schema({
     password: String 
 });
 
-const UserSchema = new mongoose.Schema({
-    username: String, 
-    password: String 
-});
+
 
 const CourseSchema = new mongoose.Schema({
     title: String, 
     description: String, 
     price: Number, 
     imageLink: String 
+});
+
+const UserSchema = new mongoose.Schema({
+    username: String, 
+    password: String,
+    courses: [CourseSchema]
 });
 
 const Admin = mongoose.model('Admin', AdminSchema);

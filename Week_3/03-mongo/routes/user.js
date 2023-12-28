@@ -2,32 +2,62 @@ const { Router } = require("express");
 const router = Router();
 const userMiddleware = require("../middleware/user");
 
-const User = mongoose.model('User', UserSchema);
-const Course = mongoose.model('Course', CourseSchema);
+const { User, Course} = require('../db');
 
 
-app.post('/signup', (req, res) => {
-    User.create({
-        username: req.body.username,
-        password: req.body.password
-    });
-    res.json({
-        message: 'User created successfully'
-    })
+
+
+router.post('/signup', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const existingUser = await User.findOne({ username });
+        if (existingUser)
+          return res.status(400).json({ message: 'User Already existing' });
+        const newUser = await new User({ username, password });
+        const savedUser = await newUser.save();
+        res.status(200).json({ message: 'User created successfully' });
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
 });
 
 
-app.get('/courses', (req, res) => {
-    Course.find().then(
-        courses => {
-            res.json(courses);
-        })
+router.get('/courses', async (req, res) => {
+    try {
+        const courses = await Course.find({});
+        if (!courses) return res.status(404).json({ message: 'No Courses found' });
+        res.status(200).json({ courses });
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }      
 });
 
-app.post('/courses/:courseId', userMiddleware, (req, res) => {
-   
+router.post('/courses/:courseId', userMiddleware, async (req, res) => {
+    try {
+        const { courseId } = req.params;
+        const { username } = req.headers;
+        const user = await User.findOne({ username });
+        if (!user) return res.status(403).json({ message: 'User not found' });
+        const course = await Course.findOne({ _id: courseId });
+        user.courses.push(course);
+        user.save();
+        res.status(200).json({ message: 'Course Purchased successfully' });
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
 });
 
-app.get('/purchasedCourses', userMiddleware, (req, res) => {
-   
+router.get('/purchasedCourses', userMiddleware, async(req, res) => {
+    try {
+        const { username } = req.headers;
+        const user = await User.findOne({ username });
+        if (!user) return res.status(403).json({ message: 'User not found' });
+        res.status(200).json({ purchasedCourses: user.courses });
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
 });

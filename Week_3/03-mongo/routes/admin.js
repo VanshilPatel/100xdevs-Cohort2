@@ -2,42 +2,51 @@ const { Router } = require("express");
 const adminMiddleware = require("../middleware/admin");
 const router = Router();
 
+const {Course, Admin } = require('../db');
 
 
-const Admin = mongoose.model('Admin', AdminSchema);
-const Course = mongoose.model('Course', CourseSchema);
 
 
-app.post('/signup', (req, res) => {
-    Admin.create({
-        username: req.body.username,
-        password: req.body.password
-    });
-    res.json({
-        message: 'Admin created successfully'
-    })
+
+router.post('/signup', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const existingAdmin = await Admin.findOne({ username });
+        if (existingAdmin)
+          return res.status(400).json({ message: 'Admin Already existing' });
+        const newAdmin = await new Admin({ username, password });
+        const savedAdmin = newAdmin.save();
+        res.status(200).json({ message: 'Admin created successfully' });
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
 });
 
 
-app.post('/courses', adminMiddleware, (req, res) => {
-  Course.create( { 
-    title: req.body.title, 
-    description: req.body.description, 
-    price: req.body.price, 
-    imageLink: req.body.image 
-})
- res.json({
-    message :'Course created successfully'
- })
+router.post('/courses', adminMiddleware, async (req, res) => {
+    try {
+        const { title, description, price, image } = req.body;
+        await Course.create({ title, description, price, image });
+        res.json({
+          message: 'Course added successfully',
+        });
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
 
 });
 
 
-app.get('/courses', adminMiddleware, (req, res) => {
-    Course.find().then(
-        courses => {
-            res.json(courses);
-        })
+router.get('/courses', adminMiddleware, async (req, res) => {
+    try {
+        const courses = await Course.find({});
+        res.json(courses);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
 });
 
 module.exports = router;
