@@ -1,0 +1,43 @@
+.business-card {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .interests-container {
+    margin-top: 15px;
+  }
+  
+  .interests-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .interests-list li {
+    margin-bottom: 5px;
+  }
+  
+  .button-container {
+    margin-top: 20px;
+  }
+  
+  .social-button {
+    margin-right: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  .social-button a {
+    color: #fff;
+    text-decoration: none;
+  }
+  
